@@ -1,17 +1,8 @@
-import { useTrending } from "@/hooks/discover/use-trending";
 import { TrendingUI } from "@/modules/discover/trending";
 
-const Trending = () => {
-  const { data, isLoading, isError, error } = useTrending("week");
-
-  return (
-    <TrendingUI
-      items={data?.results ?? []}
-      isLoading={isLoading}
-      isError={isError}
-      errorMessage={error instanceof Error ? error.message : undefined}
-    />
-  );
-};
+// The page is now just a thin shell — all the state + query orchestration
+// happens inside <TrendingUI>, because each tab panel runs its own
+// useTrending query and the page-level wrapper has nothing else to add.
+const Trending = () => <TrendingUI />;
 
 export { Trending };

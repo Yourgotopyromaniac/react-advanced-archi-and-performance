@@ -1,8 +1,18 @@
+import { Heart } from "lucide-react";
 import { Link } from "react-router";
+import { IconButton } from "@/components/ui/icon-button";
 import { Routes } from "@/router/routes";
+import {
+  useIsWatchlisted,
+  useWatchlistStore,
+} from "@/store/watchlist-store";
+import type { MediaType } from "@/types/discover";
+import { imageUrl } from "@/utils/discover";
 
 interface TitleDetailUIProps {
-  poster: string | null;
+  mediaType: MediaType;
+  id: number;
+  posterPath: string | null;
   title: string;
   meta: (string | null)[];
   rating: number;
@@ -11,13 +21,19 @@ interface TitleDetailUIProps {
 }
 
 export function TitleDetailUI({
-  poster,
+  mediaType,
+  id,
+  posterPath,
   title,
   meta,
   rating,
   voteCount,
   overview,
 }: TitleDetailUIProps) {
+  const isWatchlisted = useIsWatchlisted(mediaType, id);
+  const toggle = useWatchlistStore((state) => state.toggle);
+  const poster = imageUrl(posterPath, "w500");
+
   return (
     <article className="space-y-6">
       <Link
@@ -37,12 +53,25 @@ export function TitleDetailUI({
         </div>
 
         <div className="flex-1 space-y-3">
-          <h1 className="text-2xl text-black font-semibold">{title}</h1>
+          <div className="flex items-start gap-3">
+            <h1 className="text-2xl text-black font-semibold flex-1">
+              {title}
+            </h1>
+            <IconButton
+              tone="toggle"
+              isActive={isWatchlisted}
+              onClick={() => toggle({ mediaType, id, title, posterPath })}
+            >
+              <Heart size={14} fill={isWatchlisted ? "currentColor" : "none"} />
+            </IconButton>
+          </div>
           <p className="text-sm text-neutral-500">
             {meta.filter(Boolean).join(" · ")}
           </p>
           <p className="text-sm">
-            <span className="font-medium text-amber-500">★ {rating.toFixed(1)}</span>
+            <span className="font-medium text-amber-500">
+              ★ {rating.toFixed(1)}
+            </span>
             <span className="text-neutral-500">
               {" "}
               ({voteCount.toLocaleString()} votes)
